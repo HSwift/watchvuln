@@ -19,6 +19,7 @@ import (
 	"github.com/zema1/watchvuln/ent/vulninformation"
 	"github.com/zema1/watchvuln/grab"
 	"github.com/zema1/watchvuln/push"
+	"github.com/zema1/watchvuln/query"
 	"golang.org/x/sync/errgroup"
 	"modernc.org/sqlite"
 )
@@ -104,6 +105,11 @@ func main() {
 			Name:    "no-filter",
 			Aliases: []string{"nf"},
 			Usage:   "ignore the valuable filter and push all discovered vulns",
+		},
+		&cli.StringFlag{
+			Name:    "query-api-listen-addr",
+			Aliases: []string{"addr"},
+			Usage:   "enable the query API server and specify the listening address",
 		},
 	}
 	app.Before = func(c *cli.Context) error {
@@ -222,6 +228,8 @@ func Action(c *cli.Context) error {
 
 	log.Infof("system init finished, found %d new vulns (skip pushing)", len(vulns))
 	log.Infof("ticking every %s", interval)
+
+	RunQueryServer(c, dbClient)
 
 	defer func() {
 		if err = pusher.PushText("注意: WatchVuln 进程退出"); err != nil {
@@ -541,4 +549,15 @@ func signalCtx() (context.Context, func()) {
 		cancel()
 	}()
 	return ctx, cancel
+}
+
+func RunQueryServer(c *cli.Context, dbClient *ent.Client) {
+	queryServerListenAddr := c.String("query-server-listen-addr")
+	if os.Getenv("QUERY_SERVER_LISTEN_ADDR") != "" {
+		queryServerListenAddr = os.Getenv("QUERY_SERVER_LISTEN_ADDR")
+	}
+	if queryServerListenAddr == "" {
+		return
+	}
+	query.Run(queryServerListenAddr, dbClient)
 }
