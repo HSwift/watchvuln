@@ -96,6 +96,12 @@ func main() {
 			Category: "[\x00Push Options]",
 		},
 		&cli.StringFlag{
+			Name:     "structured-webhook-url",
+			Aliases:  []string{"structured-webhook"},
+			Usage:    "your webhook server url, ex: http://127.0.0.1:1111/webhook, it will push structured data instead of plain text",
+			Category: "[\x00Push Options]",
+		},
+		&cli.StringFlag{
 			Name:     "sources",
 			Aliases:  []string{"s"},
 			Usage:    "set vuln sources",
@@ -241,8 +247,7 @@ func Action(c *cli.Context) error {
 			Interval:  interval.String(),
 			Provider:  providers,
 		}
-		md := push.RenderInitialMsg(&msg)
-		if err := pusher.PushMarkdown("WatchVuln 初始化完成", md); err != nil {
+		if err := pusher.PushMarkdown("WatchVuln 初始化完成", &msg); err != nil {
 			return err
 		}
 	}
@@ -312,7 +317,7 @@ func Action(c *cli.Context) error {
 						continue
 					}
 					log.Infof("Pushing %s", v)
-					err = pusher.PushMarkdown(v.Title, push.RenderVulnInfo(v))
+					err = pusher.PushMarkdown(v.Title, v)
 					if err != nil {
 						log.Errorf("send dingding msg error, %s", err)
 						break
@@ -348,11 +353,12 @@ func initSources(c *cli.Context) ([]grab.Grabber, error) {
 	return grabs, nil
 }
 
-func initPusher(c *cli.Context) (push.Pusher, error) {
+func initPusher(c *cli.Context) (*push.MultiPusher, error) {
 	dingToken := c.String("dingding-access-token")
 	dingSecret := c.String("dingding-sign-secret")
 	wxWorkKey := c.String("wechatwork-key")
 	webhook := c.String("webhook-url")
+	structuredWebhook := c.String("structured-webhook-url")
 	larkToken := c.String("lark-access-token")
 	larkSecret := c.String("lark-sign-secret")
 	serverChanKey := c.String("serverchan-key")
@@ -368,6 +374,9 @@ func initPusher(c *cli.Context) (push.Pusher, error) {
 	}
 	if os.Getenv("WEBHOOK_URL") != "" {
 		webhook = os.Getenv("WEBHOOK_URL")
+	}
+	if os.Getenv("STRUCTURED_WEBHOOK_URL") != "" {
+		structuredWebhook = os.Getenv("STRUCTURED_WEBHOOK_URL")
 	}
 	if os.Getenv("LARK_ACCESS_TOKEN") != "" {
 		larkToken = os.Getenv("LARK_ACCESS_TOKEN")
@@ -390,6 +399,9 @@ func initPusher(c *cli.Context) (push.Pusher, error) {
 	}
 	if webhook != "" {
 		pushers = append(pushers, push.NewWebhook(webhook))
+	}
+	if structuredWebhook != "" {
+		pushers = append(pushers, push.NewStructuredWebhook(structuredWebhook))
 	}
 	if serverChanKey != "" {
 		pushers = append(pushers, push.NewServerChan(serverChanKey))

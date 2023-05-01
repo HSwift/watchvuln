@@ -64,8 +64,8 @@ func RenderInitialMsg(v *InitialMsg) string {
 }
 
 type InitialMsg struct {
-	Version   string
-	VulnCount int
-	Interval  string
+	Version   string `json:"version"`
+	VulnCount int    `json:"vuln_count"`
+	Interval  string `json:"interval"`
 	Provider  []*grab.Provider
 }
