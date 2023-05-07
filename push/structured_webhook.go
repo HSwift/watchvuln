@@ -37,10 +37,9 @@ func (m *StructuredWebhook) PushStructuredMessage(title, msgType string, content
 		Type:    msgType,
 	}
 	postBody, _ := json.Marshal(params)
-	resp, err := m.doPostRequest(m.url, "application/json", postBody)
+	_, err := m.doPostRequest(m.url, "application/json", postBody)
 	if err != nil {
 		return err
 	}
-	m.log.Infof("markdown response from server: %s", string(resp))
 	return nil
 }
