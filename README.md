@@ -37,20 +37,21 @@
 
 Docker 方式推荐使用环境变量来配置服务参数
 
-| 环境变量名                   | 说明                                         | 默认值                  |
-|-------------------------|--------------------------------------------|----------------------|
-| `DINGDING_ACCESS_TOKEN` | 钉钉机器人 url 的 `access_token` 部分              |                      |
-| `DINGDING_SECRET`       | 钉钉机器人的加签值 （仅支持加签方式）                        |                      |
-| `LARK_ACCESS_TOKEN`     | 飞书机器人 url 的 `/open-apis/bot/v2/hook/` 后的部分 |                      |
-| `LARK_SECRET`           | 飞书机器人的加签值 （仅支持加签方式）                        |                      |
-| `WECHATWORK_KEY `       | 微信机器人 url 的 `key` 部分                       |                      |
-| `SERVERCHAN_KEY `       | Server酱的 `SCKEY`                           |                      |
-| `WEBHOOK_URL`           | 自定义 webhook 服务的完整 url                      |                      |
-| `SOURCES`               | 启用哪些漏洞信息源，逗号分隔, 可选 `avd`, `ti`, `oscs`     | `avd,ti,oscs,seebug` |
-| `INTERVAL`              | 检查周期，支持秒 `60s`, 分钟 `10m`, 小时 `1h`, 最低 `1m` | `30m`                |
-| `ENABLE_CVE_FILTER`     | 启用 CVE 过滤，开启后多个数据源的统一 CVE 将只推送一次           | `true`               |
-| `NO_FILTER`             | 禁用上述推送过滤策略，所有新发现的漏洞都会被推送                   | `false`              |
-| `NO_START_MESSAGE`      | 禁用服务启动的提示信息                                | `false`              |
+| 环境变量名                    | 说明                                         | 默认值                  |
+|--------------------------|--------------------------------------------|----------------------|
+| `DINGDING_ACCESS_TOKEN`  | 钉钉机器人 url 的 `access_token` 部分              |                      |
+| `DINGDING_SECRET`        | 钉钉机器人的加签值 （仅支持加签方式）                        |                      |
+| `LARK_ACCESS_TOKEN`      | 飞书机器人 url 的 `/open-apis/bot/v2/hook/` 后的部分 |                      |
+| `LARK_SECRET`            | 飞书机器人的加签值 （仅支持加签方式）                        |                      |
+| `WECHATWORK_KEY `        | 微信机器人 url 的 `key` 部分                       |                      |
+| `SERVERCHAN_KEY `        | Server酱的 `SCKEY`                           |                      |
+| `WEBHOOK_URL`            | 自定义 webhook 服务的完整 url                      |                      |
+| `STRUCTURED_WEBHOOK_URL` | 自定义 webhook 服务的完整 url , 推送结构化的数据而不是渲染好的文本  |                      |
+| `SOURCES`                | 启用哪些漏洞信息源，逗号分隔, 可选 `avd`, `ti`, `oscs`     | `avd,ti,oscs,seebug` |
+| `INTERVAL`               | 检查周期，支持秒 `60s`, 分钟 `10m`, 小时 `1h`, 最低 `1m` | `30m`                |
+| `ENABLE_CVE_FILTER`      | 启用 CVE 过滤，开启后多个数据源的统一 CVE 将只推送一次           | `true`               |
+| `NO_FILTER`              | 禁用上述推送过滤策略，所有新发现的漏洞都会被推送                   | `false`              |
+| `NO_START_MESSAGE`       | 禁用服务启动的提示信息                                | `false`              |
 
 比如使用钉钉机器人
 
@@ -158,6 +159,7 @@ GLOBAL OPTIONS:
    --lark-sign-secret value, --ls value       sign secret of lark
    --serverchan-key value, --sk value         send key for server chan
    --webhook-url value, --webhook value       your webhook server url, ex: http://127.0.0.1:1111/webhook
+   --structured-webhook-url value, --structured-webhook value       your webhook server url, ex: http://127.0.0.1:1111/webhook, it will push structured data instead of plain text
    --wechatwork-key value, --wk value         webhook key of wechat work
 
    [Launch Options]
